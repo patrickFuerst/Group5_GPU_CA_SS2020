@@ -1,10 +1,12 @@
 
 
 // includes, system
+#include <fstream>
 #include <iostream>
 #include <stdlib.h>
-
 #include <boost/lexical_cast.hpp>
+
+#include "OurGraph.h"
 
 static void show_usage(std::string name)
 {
@@ -20,8 +22,7 @@ static void show_usage(std::string name)
 }
 
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 
 	using boost::lexical_cast;
@@ -31,14 +32,18 @@ main(int argc, char **argv)
 	int numNodes = 0;
 	float density = 0.0;
 	int weightRangeLow = 0;
-	int weightRangeUp = 0;
+	int weightRangeHigh = 0;
 
 	if (argc == 1 && argv[1] == "-h") {
 		show_usage(argv[0]);
+		exit(EXIT_SUCCESS);
+
 	}
 	else if (argc != 6) { //first argument always program name, second is -p flag
 		std::cout << "Please provide 4 arguments." << std::endl;
 		show_usage(argv[0]);
+		exit(EXIT_SUCCESS);
+
 	}
 	else if (argc == 6) {
 		
@@ -47,11 +52,11 @@ main(int argc, char **argv)
 			numNodes = lexical_cast<int>(argv[2]);
 			density = lexical_cast<float>(argv[3]);
 			weightRangeLow = lexical_cast<int>(argv[4]);
-			weightRangeUp = lexical_cast<int>(argv[5]);
+			weightRangeHigh = lexical_cast<int>(argv[5]);
 			std::cout << "Creating graph with parameters " << std::endl
 				<< "Number of Nodes: " << numNodes << std::endl
 				<< "Graph density " << density << std::endl
-				<< "Weight range [" << weightRangeLow << "," << weightRangeUp << "] " << std::endl;
+				<< "Weight range [" << weightRangeLow << "," << weightRangeHigh << "] " << std::endl;
 				 
 
 		}
@@ -62,10 +67,26 @@ main(int argc, char **argv)
 
 	}
 
-
 	// create graph 
+	unsigned seed = 1234;
+	OurGraph graph = OurGraph::generateGraph(numNodes, density, weightRangeLow, weightRangeHigh, seed);
+
+
+	// safe to file 
+	std::stringstream sstm;
+	sstm << "graph_" << numNodes << "_" << density << "_" << weightRangeLow << "_" << weightRangeHigh << "_" << seed << ".txt";
+	std::string fileName = sstm.str();
+	std::ofstream out(fileName);
+	out << graph;
+	out.close();
+
+	OurGraph newGraph; 
+	std::ifstream in(fileName);
+	in >> newGraph;
+	in.close();
 
 	exit(EXIT_SUCCESS);
+
 
 
 }
