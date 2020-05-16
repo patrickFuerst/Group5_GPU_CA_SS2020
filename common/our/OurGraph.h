@@ -77,7 +77,7 @@ public:
 
 matrix<int> OurGraph::getAdjacencyMatrix() {
 
-	matrix<int> m(this->mNumVertices, this->mNumVertices, std::numeric_limits<int>::infinity());
+	matrix<int> m(this->mNumVertices, this->mNumVertices, std::numeric_limits<int>::max());
 	for (auto e : this->mEdgeMap) {
 		int i = e.first.first;
 		int j = e.first.second;
