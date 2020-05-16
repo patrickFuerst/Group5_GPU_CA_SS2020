@@ -112,7 +112,11 @@ OurGraph OurGraph::generateGraph(int N, float density, int weightLow, int weight
 		do
 		{
 			int u = distrVertices(eng);
-			int v = distrVertices(eng);
+			int v;
+			do {
+				v = distrVertices(eng);
+			} while (u == v);
+
 			int weight = distrWeights(eng);
 			vertexNums.erase(u);
 			vertexNums.erase(v);
