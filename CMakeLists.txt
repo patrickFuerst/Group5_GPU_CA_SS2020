@@ -10,10 +10,13 @@ project(Group5_GPU_CA_SS2020
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(Boost_USE_STATIC_LIBS ON)
+find_package(Boost REQUIRED COMPONENTS filesystem )
 
 # The compiled library code is here
 add_subdirectory("src")
 
 # The executable code is here
 add_subdirectory("apps/shortestPathFinder")
+add_subdirectory("apps/floydWarshallAlgorithm")
 add_subdirectory("apps/graphGenerator")

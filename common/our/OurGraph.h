@@ -2,12 +2,17 @@
 
 #include <unordered_map>
 #include <boost/functional/hash.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 #include <iostream>
 #include <random>
 #include <numeric>
 #include <set>
 #include <cassert>	
 
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
+using namespace boost::numeric::ublas;
 
 class OurGraph
 {
@@ -18,9 +23,13 @@ public:
 	typedef std::unordered_map<Edge, int, boost::hash<Edge> > EdgeMap;
 
 	OurGraph() {};
-	OurGraph(int N, int numEdges) : mNumVertices(N), mNumEdges(numEdges), mEdgeMap(numEdges) {};
-	static OurGraph generateGraph(int N, float density, int weightLow, int weightHigh, unsigned seed = 1234);
+	OurGraph(int N, int numEdges) : mNumVertices(N), mNumEdges(numEdges), mEdgeMap(numEdges){};
 	
+	matrix<int> getAdjacencyMatrix();
+	static OurGraph generateGraph(int N, float density, int weightLow, int weightHigh, unsigned seed = 1234);
+	static OurGraph loadGraph(fs::path files); 
+	
+
 	friend std::ostream& operator << (std::ostream& out, const OurGraph& obj)
 	{
 
@@ -45,11 +54,13 @@ public:
 		while (!in.eof()) {
 			in.ignore(1); // ignore first character
 			std::getline(in, line);
-			int u, v, weight;
+			int i, j, weight;
 			std::stringstream ss(line);
-			ss >> u >> v >> weight;
-			auto newEdge = OurGraph::Edge(u, v);
+			ss >> i >> j >> weight;
+
+			auto newEdge = OurGraph::Edge(i, j);
 			obj.mEdgeMap.emplace(newEdge, weight);
+			
 		}
 		return in;
 	}
@@ -57,12 +68,27 @@ public:
 	EdgeMap mEdgeMap;
 
 
-private:
+public:
 
 	int mNumEdges, mNumVertices;
 
 };
 
+
+matrix<int> OurGraph::getAdjacencyMatrix() {
+
+	matrix<int> m(this->mNumVertices, this->mNumVertices, std::numeric_limits<int>::infinity());
+	for (auto e : this->mEdgeMap) {
+		int i = e.first.first;
+		int j = e.first.second;
+		int weight = e.second;
+		m(i, i) = 0;
+		m(j, j) = 0;
+		m(i, j) = weight;
+	}
+
+	return m;
+}
 
 OurGraph OurGraph::generateGraph(int N, float density, int weightLow, int weightHigh, unsigned seed) {
 
@@ -72,7 +98,7 @@ OurGraph OurGraph::generateGraph(int N, float density, int weightLow, int weight
 	OurGraph graph(N, allowedNumEdges);
 
 	std::mt19937 eng(seed); // seed the generator
-	std::uniform_int_distribution<> distrVertices(1, N); // define the range
+	std::uniform_int_distribution<> distrVertices(0, N-1); // define the range
 	std::uniform_int_distribution<> distrWeights(weightLow, weightHigh); // define the range
 
 	std::vector<int> tmp;
@@ -113,5 +139,11 @@ OurGraph OurGraph::generateGraph(int N, float density, int weightLow, int weight
 
 }
 
+OurGraph OurGraph::loadGraph(fs::path file) {
 
-
+	OurGraph newGraph;
+	std::ifstream in(file.string());
+	in >> newGraph;
+	in.close();
+	return newGraph;
+}
