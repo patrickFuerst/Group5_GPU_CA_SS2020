@@ -24,7 +24,9 @@ public:
 
 	OurGraph() {};
 	OurGraph(int N, int numEdges) : mNumVertices(N), mNumEdges(numEdges), mEdgeMap(numEdges){};
-	
+	OurGraph(const OurGraph& g) = delete;
+	OurGraph( OurGraph&& g) = default;
+
 	matrix<int> getAdjacencyMatrix();
 	static OurGraph generateGraph(int N, float density, int weightLow, int weightHigh, unsigned seed = 1234);
 	static OurGraph loadGraph(fs::path files); 
