@@ -28,6 +28,10 @@ void floysWarshall(matrix<int>& m) {
 	// Implemented according to 
 	// https://dl.acm.org/doi/pdf/10.1145/367766.368168
 
+	// This implemnetation changes the adjacency matrix in place 
+	// to contain all the shortest path in the end. 
+	// This saves us memory and allocation time.
+
 	assert(m.size1() == m.size2());
 	int n = m.size1();
 	int inf = std::numeric_limits<int>::max();
@@ -45,13 +49,18 @@ void floysWarshall(matrix<int>& m) {
 			}
 		}
 	}
-
+	// Currently the graph generation algorithm only has positive edges
+	// Thus we don't need to check for negative cycley. 
+	// We need to figure out how to introduce negative edges without introducing negative cycles 
+	// since this is mentioned in the assignment.
+	/*
 	for (int i = 0; i < n; i++) {
 		if (m(i, i) < 0) {
 			std::cout << "Negative Circle found!";
 		}
 
 	}
+	*/
 
 }
 
@@ -107,10 +116,7 @@ int main(int argc, char **argv)
 
 				OurGraph graph = OurGraph::loadGraph(iter->path());
 				auto m = graph.getAdjacencyMatrix();
-				std::cout << m << std::endl;
-
 				floysWarshall(m);
-				std::cout << m << std::endl;
 
 			}
 
