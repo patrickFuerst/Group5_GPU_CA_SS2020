@@ -80,10 +80,6 @@ int main(int argc, char **argv)
 	out << graph;
 	out.close();
 
-	OurGraph newGraph; 
-	std::ifstream in(fileName);
-	in >> newGraph;
-	in.close();
 
 	exit(EXIT_SUCCESS);
 
