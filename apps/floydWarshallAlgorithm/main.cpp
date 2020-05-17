@@ -4,11 +4,12 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
+#include <chrono>
+
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 #include "OurGraph.h"
 #include <boost/numeric/ublas/io.hpp>
-
 
 namespace fs =  boost::filesystem;
 
@@ -116,8 +117,18 @@ int main(int argc, char **argv)
 
 				OurGraph graph = OurGraph::loadGraph(iter->path());
 				auto m = graph.getAdjacencyMatrix();
+
+				// Record start time
+				// We actually just track the alorithm implementation 
+				// not data loading 
+				auto start = std::chrono::high_resolution_clock::now();
+
 				floysWarshall(m);
 
+				// Record end time
+				auto finish = std::chrono::high_resolution_clock::now();
+				std::chrono::duration<double, std::milli> elapsed = finish - start;
+				std::cout << "Took " << elapsed.count() << " ms." << std::endl;
 			}
 
 
