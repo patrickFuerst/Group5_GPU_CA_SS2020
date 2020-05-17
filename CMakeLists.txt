@@ -17,3 +17,4 @@ add_subdirectory("src")
 # The executable code is here
 add_subdirectory("apps/shortestPathFinder")
 add_subdirectory("apps/graphGenerator")
+add_subdirectory("apps/shortestPathFinderThrust")
