@@ -80,12 +80,15 @@ public:
 matrix<int> OurGraph::getAdjacencyMatrix() {
 
 	matrix<int> m(this->mNumVertices, this->mNumVertices, std::numeric_limits<int>::max());
+
+	for (int i = 0; i < this->mNumVertices; i++) {
+		m(i, i) = 0;
+	}
+
 	for (auto e : this->mEdgeMap) {
 		int i = e.first.first;
 		int j = e.first.second;
 		int weight = e.second;
-		m(i, i) = 0;
-		m(j, j) = 0;
 		m(i, j) = weight;
 	}
 
