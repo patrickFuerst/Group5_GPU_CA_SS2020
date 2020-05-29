@@ -10,6 +10,7 @@
 #include <cassert>	
 
 #include <boost/filesystem.hpp>
+#include <thrust/host_vector.h>
 
 namespace fs = boost::filesystem;
 using namespace boost::numeric::ublas;
@@ -28,6 +29,8 @@ public:
 	OurGraph( OurGraph&& g) = default;
 
 	matrix<int> getAdjacencyMatrix();
+	thrust::host_vector<int> getAdjacencyMatrixHostVector();
+
 	static OurGraph generateGraph(int N, float density, int weightLow, int weightHigh, unsigned seed = 1234);
 	static OurGraph loadGraph(fs::path files); 
 	
@@ -90,6 +93,22 @@ matrix<int> OurGraph::getAdjacencyMatrix() {
 		int j = e.first.second;
 		int weight = e.second;
 		m(i, j) = weight;
+	}
+
+	return m;
+}
+
+thrust::host_vector<int> OurGraph::getAdjacencyMatrixHostVector() {
+
+	thrust::host_vector<int> m(this->mNumVertices* this->mNumVertices, std::numeric_limits<int>::max());
+	for (int i = 0; i < this->mNumVertices; i++) {
+		m[i  * this->mNumVertices + i ] = 0; // set the diagonal to 0
+	}
+	for (auto e : this->mEdgeMap) {
+		int i = e.first.first;
+		int j = e.first.second;
+		int weight = e.second;
+		m[ i * this->mNumVertices + j ] = weight;
 	}
 
 	return m;
