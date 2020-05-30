@@ -9,19 +9,11 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 #include "OurGraph.h"
+#include "OurHelper.h"
+
 #include <boost/numeric/ublas/io.hpp>
 
 namespace fs =  boost::filesystem;
-
-static void show_usage(std::string name)
-{
-	std::cerr << "Usage: " << name << std::endl
-		<< "Options:\n"
-		<< "\t-h,\tShow this help message\n"
-		<< "\t-f,\tFile containing graph data\n" 
-		<< "\t\t\tIf it's a directory the algorithm is run on all files.\n"
-		<< std::endl;
-}
 
 
 void floysWarshall(matrix<int>& m) {
@@ -36,18 +28,17 @@ void floysWarshall(matrix<int>& m) {
 	assert(m.size1() == m.size2());
 	int n = m.size1();
 	int inf = std::numeric_limits<int>::max();
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (m(j, i) < inf) {
-				for (int k = 0; k < n; k++) {
-					if (m(i, k) < inf) {
-						if (m(j, k) > m(j, i) + m(i, k)) {
-							int d = m(j, i) + m(i, k);
-							m(j, k) = m(j, i) + m(i, k);
-						}
-					}
+
+	for (int k = 0; k < n; k++) {
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (m(j, k) > m(j, i) + m(i, k)) {
+					int d = m(j, i) + m(i, k);
+					m(j, k) = m(j, i) + m(i, k);
 				}
+					
 			}
+			
 		}
 	}
 	// Currently the graph generation algorithm only has positive edges
@@ -69,74 +60,39 @@ void floysWarshall(matrix<int>& m) {
 int main(int argc, char **argv)
 {
 
-	using boost::lexical_cast;
-	using boost::bad_lexical_cast;
 
-	bool evaluateMultipleFiles = false;
-	fs::path dataPath = "";
+	auto path = evaluateArgs(argc, argv);
+	auto graphFiles = getGraphFiles(path);
 
-	if (argc == 1 && argv[1] == "-h") {
-		show_usage(argv[0]);
-		exit(EXIT_SUCCESS);
 
-	}
-	else if (argc != 3) { //first argument always program name, second is -f flag
-		std::cout << "Please provide the path to the file(s)." << std::endl;
-		show_usage(argv[0]);
-		exit(EXIT_SUCCESS);
+	for (auto filePath : graphFiles) {
 
-	}
-	else if (argc == 3) {
-		
-	
-			
-		dataPath  = argv[2];
+		OurGraph graph = OurGraph::loadGraph(filePath);
+		auto m = graph.getAdjacencyMatrix();
 
-		if(fs::exists(dataPath) )
-		{
-			if(fs::is_directory(dataPath) ) {
-				evaluateMultipleFiles = true;
+
+		// Record start time
+		// We actually just track the alorithm implementation 
+		// not data loading 
+		auto start = std::chrono::high_resolution_clock::now();
+
+		floysWarshall(m);
+
+		// Record end time
+		auto finish = std::chrono::high_resolution_clock::now();
+
+		for (int i = 0; i < graph.mNumVertices; i++) {
+			for (int j = 0; j < graph.mNumVertices; j++) {
+				std::cout << m(i,j) << " ";
 			}
-			else if (!fs::is_regular_file(dataPath)) {
-				std::cout << "Please provide a valid path to the file(s)." << std::endl;
-				exit(EXIT_SUCCESS);
-			}
-				
-		}
-	
-	}
-
-	if (evaluateMultipleFiles) {
-
-		fs::directory_iterator endIter; 
-		for (fs::directory_iterator iter(dataPath); iter != endIter; ++iter) {
-
-			if (fs::is_regular_file(iter->path()) && iter->path().extension() == ".txt") {
-
-				std::cout << "Processing file " << iter->path().filename() << std::endl;
-
-				OurGraph graph = OurGraph::loadGraph(iter->path());
-				auto m = graph.getAdjacencyMatrix();
-
-				// Record start time
-				// We actually just track the alorithm implementation 
-				// not data loading 
-				auto start = std::chrono::high_resolution_clock::now();
-
-				floysWarshall(m);
-
-				// Record end time
-				auto finish = std::chrono::high_resolution_clock::now();
-				std::chrono::duration<double, std::milli> elapsed = finish - start;
-				std::cout << "Took " << elapsed.count() << " ms." << std::endl;
-			}
-
+			std::cout << std::endl;
 
 		}
 
+		std::chrono::duration<double, std::milli> elapsed = finish - start;
+		std::cout << "Took " << elapsed.count() << " ms." << std::endl;
+
 	}
-
-
 	exit(EXIT_SUCCESS);
 
 
