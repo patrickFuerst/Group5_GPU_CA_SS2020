@@ -16,7 +16,6 @@ int main(int argc, char **argv)
 {
     std::cout << "Thrust v " << THRUST_MAJOR_VERSION << "." << THRUST_MINOR_VERSION << std::endl;
 
-
     auto path = evaluateArgs(argc, argv);
     auto graphFiles = getGraphFiles(path);
 
@@ -26,13 +25,15 @@ int main(int argc, char **argv)
 		OurGraph graph = OurGraph::loadGraph(filePath);
 		auto m = graph.getAdjacencyMatrixHostVector();
 
-		//for (int i = 0; i < graph.mNumVertices; i++) {
-		//	for (int j = 0; j < graph.mNumVertices; j++) {
-		//		std::cout <<  m[i * graph.mNumVertices + j] << " ";
-		//	}
-		//	std::cout << std::endl;
+		for (int i = 0; i < graph.mNumVertices; i++) {
+			for (int j = 0; j < graph.mNumVertices; j++) {
+				std::cout <<  m[i * graph.mNumVertices + j] << " ";
+			}
+			std::cout << std::endl;
 
-		//}
+		}
+
+		std::cout << " ---- START Thrust implementation ----" << std::endl;
 
 		// Record start time
 		// We actually just track the alorithm implementation 
@@ -40,12 +41,25 @@ int main(int argc, char **argv)
 		auto start = std::chrono::high_resolution_clock::now();
 
 
-		sort_on_device(m);
+		floysWarshallThrust(m);
 		// print sorted array
-		thrust::copy(m.begin(), m.end(), std::ostream_iterator<int>(std::cout, "\n"));
-
+		
 		// Record end time
 		auto finish = std::chrono::high_resolution_clock::now();
+
+		std::cout << " ---- END Thrust implementation ----" << std::endl;
+
+		for (int i = 0; i < graph.mNumVertices; i++) {
+			for (int j = 0; j < graph.mNumVertices; j++) {
+				std::cout << m[i * graph.mNumVertices + j] << " ";
+			}
+			std::cout << std::endl;
+
+		}
+		//thrust::copy(m.begin(), m.end(), std::ostream_iterator<int>(std::cout, "\n"));
+
+
+
 		std::chrono::duration<double, std::milli> elapsed = finish - start;
 		std::cout << "Took " << elapsed.count() << " ms." << std::endl;
 
