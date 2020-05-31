@@ -25,13 +25,13 @@ int main(int argc, char **argv)
 		OurGraph graph = OurGraph::loadGraph(filePath);
 		auto m = graph.getAdjacencyMatrixHostVector();
 
-		for (int i = 0; i < graph.mNumVertices; i++) {
-			for (int j = 0; j < graph.mNumVertices; j++) {
-				std::cout <<  m[i * graph.mNumVertices + j] << " ";
-			}
-			std::cout << std::endl;
+		//for (int i = 0; i < graph.mNumVertices; i++) {
+		//	for (int j = 0; j < graph.mNumVertices; j++) {
+		//		std::cout <<  m[i * graph.mNumVertices + j] << " ";
+		//	}
+		//	std::cout << std::endl;
 
-		}
+		//}
 
 		std::cout << " ---- START Thrust implementation ----" << std::endl;
 
@@ -49,13 +49,13 @@ int main(int argc, char **argv)
 
 		std::cout << " ---- END Thrust implementation ----" << std::endl;
 
-		for (int i = 0; i < graph.mNumVertices; i++) {
-			for (int j = 0; j < graph.mNumVertices; j++) {
-				std::cout << m[i * graph.mNumVertices + j] << " ";
-			}
-			std::cout << std::endl;
+		//for (int i = 0; i < graph.mNumVertices; i++) {
+		//	for (int j = 0; j < graph.mNumVertices; j++) {
+		//		std::cout << m[i * graph.mNumVertices + j] << " ";
+		//	}
+		//	std::cout << std::endl;
 
-		}
+		//}
 		//thrust::copy(m.begin(), m.end(), std::ostream_iterator<int>(std::cout, "\n"));
 
 

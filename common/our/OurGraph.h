@@ -192,10 +192,15 @@ OurGraph OurGraph::generateGraph(int N, float density, int weightLow, int weight
 }
 
 OurGraph OurGraph::loadGraph(fs::path file) {
+	
+	std::cout << "Loading graph!" << std::endl;
 
 	OurGraph newGraph;
 	std::ifstream in(file.string());
 	in >> newGraph;
 	in.close();
+
+	std::cout << "DONE loading graph!" << std::endl;
+
 	return newGraph;
 }

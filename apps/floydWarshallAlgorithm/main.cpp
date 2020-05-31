@@ -84,13 +84,13 @@ int main(int argc, char **argv)
 			// Record end time
 			auto finish = std::chrono::high_resolution_clock::now();
 
-			for (int i = 0; i < graph.mNumVertices; i++) {
-				for (int j = 0; j < graph.mNumVertices; j++) {
-					std::cout << m(i, j) << " ";
-				}
-				std::cout << std::endl;
+			//for (int i = 0; i < graph.mNumVertices; i++) {
+			//	for (int j = 0; j < graph.mNumVertices; j++) {
+			//		std::cout << m(i, j) << " ";
+			//	}
+			//	std::cout << std::endl;
 
-			}
+			//}
 
 			std::chrono::duration<double, std::milli> elapsed = finish - start;
 			std::cout << "Our implementation took " << elapsed.count() << " ms." << std::endl;
@@ -105,13 +105,13 @@ int main(int argc, char **argv)
 		bool result = boost::floyd_warshall_all_pairs_shortest_paths(g, d, weight_map(weightmap));
 		auto finish = std::chrono::high_resolution_clock::now();
 
-		for (int i = 0; i < graph.mNumVertices; i++) {
-			for (int j = 0; j < graph.mNumVertices; j++) {
-				std::cout << d[i][j] << " ";
-			}
-			std::cout << std::endl;
+		//for (int i = 0; i < graph.mNumVertices; i++) {
+		//	for (int j = 0; j < graph.mNumVertices; j++) {
+		//		std::cout << d[i][j] << " ";
+		//	}
+		//	std::cout << std::endl;
 
-		}
+		//}
 
 
 		std::chrono::duration<double, std::milli> elapsed = finish - start;
