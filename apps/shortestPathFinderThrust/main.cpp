@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 		auto start = std::chrono::high_resolution_clock::now();
 
 
-		floysWarshallThrust(m);
+		floydWarshallThrust(m);
 		// print sorted array
 		
 		// Record end time

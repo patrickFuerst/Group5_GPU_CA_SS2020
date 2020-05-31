@@ -3,4 +3,4 @@
 #include <thrust/host_vector.h>
 
 
-void floysWarshallThrust(thrust::host_vector<int>& h_vec);
+void floydWarshallThrust(thrust::host_vector<int>& h_vec);

@@ -1,5 +1,4 @@
 
-#include <thrust/sort.h>
 #include <thrust/device_vector.h>
 #include <thrust/copy.h>
 
@@ -26,7 +25,7 @@ struct FindShorter
 };
 
 
-void floysWarshallThrust(thrust::host_vector<int>& h_vec)
+void floydWarshallThrust(thrust::host_vector<int>& h_vec)
 {
 	int n = sqrt(h_vec.size());
 	// transfer data to the device
