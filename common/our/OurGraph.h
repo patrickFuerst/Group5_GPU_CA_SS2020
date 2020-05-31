@@ -10,10 +10,15 @@
 #include <cassert>	
 
 #include <boost/filesystem.hpp>
+#include <boost/graph/graph_traits.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/exterior_property.hpp>
+
 #include <thrust/host_vector.h>
 
 namespace fs = boost::filesystem;
 using namespace boost::numeric::ublas;
+using namespace boost;
 
 class OurGraph
 {
@@ -22,6 +27,11 @@ public:
 
 	typedef std::pair<int, int> Edge;
 	typedef std::unordered_map<Edge, int, boost::hash<Edge> > EdgeMap;
+	
+	typedef adjacency_list<listS, vecS, directedS, no_property, property<edge_weight_t, int> > DirectedGraph;
+	typedef graph_traits<DirectedGraph>::vertex_descriptor Vertex;
+	typedef exterior_vertex_property<DirectedGraph, int> DistanceProperty;
+	typedef DistanceProperty::matrix_type DistanceMatrix;
 
 	OurGraph() {};
 	OurGraph(int N, int numEdges) : mNumVertices(N), mNumEdges(numEdges), mEdgeMap(numEdges){};
@@ -30,6 +40,7 @@ public:
 
 	matrix<int> getAdjacencyMatrix();
 	thrust::host_vector<int> getAdjacencyMatrixHostVector();
+	DirectedGraph getBoostGraph();
 
 	static OurGraph generateGraph(int N, float density, int weightLow, int weightHigh, unsigned seed = 1234);
 	static OurGraph loadGraph(fs::path files); 
@@ -112,6 +123,19 @@ thrust::host_vector<int> OurGraph::getAdjacencyMatrixHostVector() {
 	}
 
 	return m;
+}
+
+OurGraph::DirectedGraph OurGraph::getBoostGraph() {
+
+	DirectedGraph g;
+	for (auto e : this->mEdgeMap) {
+		int i = e.first.first;
+		int j = e.first.second;
+		int weight = e.second;
+		boost::add_edge(i, j, weight, g);
+	}
+	
+	return g;
 }
 
 OurGraph OurGraph::generateGraph(int N, float density, int weightLow, int weightHigh, unsigned seed) {

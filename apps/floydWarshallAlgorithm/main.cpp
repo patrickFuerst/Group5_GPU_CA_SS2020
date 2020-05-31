@@ -12,6 +12,7 @@
 #include "OurHelper.h"
 
 #include <boost/numeric/ublas/io.hpp>
+#include <boost/graph/floyd_warshall_shortest.hpp>
 
 namespace fs =  boost::filesystem;
 
@@ -68,29 +69,53 @@ int main(int argc, char **argv)
 	for (auto filePath : graphFiles) {
 
 		OurGraph graph = OurGraph::loadGraph(filePath);
-		auto m = graph.getAdjacencyMatrix();
+		
+		{ // scope graph matrix so it gets deleted when done and doesn't cosnume memory 
+			auto m = graph.getAdjacencyMatrix();
 
 
-		// Record start time
-		// We actually just track the alorithm implementation 
-		// not data loading 
+			// Record start time
+			// We actually just track the alorithm implementation 
+			// not data loading 
+			auto start = std::chrono::high_resolution_clock::now();
+
+			floysWarshall(m);
+
+			// Record end time
+			auto finish = std::chrono::high_resolution_clock::now();
+
+			for (int i = 0; i < graph.mNumVertices; i++) {
+				for (int j = 0; j < graph.mNumVertices; j++) {
+					std::cout << m(i, j) << " ";
+				}
+				std::cout << std::endl;
+
+			}
+
+			std::chrono::duration<double, std::milli> elapsed = finish - start;
+			std::cout << "Our implementation took " << elapsed.count() << " ms." << std::endl;
+
+		}
+
+		auto g = graph.getBoostGraph();
+		OurGraph::DistanceMatrix d(graph.mNumVertices);
+		boost::property_map<OurGraph::DirectedGraph, boost::edge_weight_t>::type weightmap = boost::get(boost::edge_weight, g);
+
 		auto start = std::chrono::high_resolution_clock::now();
-
-		floysWarshall(m);
-
-		// Record end time
+		bool result = boost::floyd_warshall_all_pairs_shortest_paths(g, d, weight_map(weightmap));
 		auto finish = std::chrono::high_resolution_clock::now();
 
 		for (int i = 0; i < graph.mNumVertices; i++) {
 			for (int j = 0; j < graph.mNumVertices; j++) {
-				std::cout << m(i,j) << " ";
+				std::cout << d[i][j] << " ";
 			}
 			std::cout << std::endl;
 
 		}
 
+
 		std::chrono::duration<double, std::milli> elapsed = finish - start;
-		std::cout << "Took " << elapsed.count() << " ms." << std::endl;
+		std::cout << "Boost implementation took " << elapsed.count() << " ms." << std::endl;
 
 	}
 	exit(EXIT_SUCCESS);
