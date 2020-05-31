@@ -6,13 +6,15 @@
 struct FindShorter 
 {
 	thrust::device_ptr <int> matrix;
-	int n,k,i; 
+	int n,k; 
 
-	FindShorter(thrust::device_ptr <int> m, int n , int k, int i    ) : 
-		matrix(m), n(n), k(k), i(i){}
+	FindShorter(thrust::device_ptr <int> m, int n , int k    ) : 
+		matrix(m), n(n), k(k) {}
 
-	__host__ __device__ int operator () (int j) const
+	__host__ __device__ int operator () (int index) const
 	{
+		int i = index / n;
+		int j = index % n;
 		int oldDist = matrix[i * n + j];
 		int newDist = matrix[i * n + k] + matrix[k * n + j];
 
@@ -32,13 +34,12 @@ void floysWarshallThrust(thrust::host_vector<int>& h_vec)
 	thrust::device_vector<int> result = h_vec;
 
 	thrust::counting_iterator < int > c0(0);
-	thrust::counting_iterator < int > c1(n);
+	thrust::counting_iterator < int > c1(n*n);
 	for (int k = 0; k < n; k++) {
-		for (int i = 0; i < n; i++) {
 
-			thrust::transform(c0, c1,result.begin()+i*n, FindShorter(d_vec.data(), n, k, i));
+		thrust::transform(c0, c1,result.begin(), FindShorter(d_vec.data(), n, k));
 
-		}
+		
 		thrust::swap(d_vec, result);
 
 	}
