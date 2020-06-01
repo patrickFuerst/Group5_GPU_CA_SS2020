@@ -41,6 +41,7 @@ public:
 	matrix<int> getAdjacencyMatrix();
 	thrust::host_vector<int> getAdjacencyMatrixHostVector();
 	DirectedGraph getBoostGraph();
+	bool checkNegativeCycles();
 
 	static OurGraph generateGraph(int N, float density, int weightLow, int weightHigh, unsigned seed = 1234);
 	static OurGraph loadGraph(fs::path files); 
@@ -203,4 +204,35 @@ OurGraph OurGraph::loadGraph(fs::path file) {
 	std::cout << "DONE loading graph!" << std::endl;
 
 	return newGraph;
+}
+
+bool OurGraph::checkNegativeCycles()
+{
+	int* dist = new int[this->mNumVertices];
+
+	for (int i = 0; i < this->mNumVertices; i++) {
+		dist[i] = INT_MAX;
+	}
+	dist[0] = 0;
+
+	for (int i = 1; i < this->mNumVertices; i++) {
+		for (auto e : this->mEdgeMap) {
+			int src = e.first.first;
+			int dest = e.first.second;
+			int w = e.second;
+			if (dist[src] != INT_MAX && dist[src] + w < dist[dest]) {
+				dist[dest] = dist[src] + w;
+			}
+		}
+	}
+
+	for (auto e : this->mEdgeMap) {
+		int src = e.first.first;
+		int dest = e.first.second;
+		int w = e.second;
+		if (dist[src] != INT_MAX && dist[src] + w < dist[dest])
+			return true;
+	}
+
+	return false;
 }
