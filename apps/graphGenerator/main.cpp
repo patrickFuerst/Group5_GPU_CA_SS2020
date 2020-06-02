@@ -71,12 +71,12 @@ int main(int argc, char **argv)
 	OurGraph graph = OurGraph::generateGraph(numNodes, density, weightRangeLow, weightRangeHigh, seed);
 
 	// check for negative cycles and create new graph if it does
-	bool hasNegativeCycles = graph.checkNegativeCycles();
+	/*bool hasNegativeCycles = graph.checkNegativeCycles();
 	while (hasNegativeCycles) {
 		seed += 1;
 		OurGraph graph = OurGraph::generateGraph(numNodes, density, weightRangeLow, weightRangeHigh, seed);
 		hasNegativeCycles = graph.checkNegativeCycles();
-	}
+	}*/
 
 
 	// safe to file 
