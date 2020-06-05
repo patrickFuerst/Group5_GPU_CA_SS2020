@@ -67,8 +67,10 @@ int main(int argc, char **argv)
 	}
 
 	// create graph 
-	unsigned seed = 1234;
+	unsigned seed = 1235;
 	OurGraph graph = OurGraph::generateGraph(numNodes, density, weightRangeLow, weightRangeHigh, seed);
+
+	std::cout << graph.fletcher64() << std::endl;
 
 	// check for negative cycles and create new graph if it does
 	/*bool hasNegativeCycles = graph.checkNegativeCycles();
