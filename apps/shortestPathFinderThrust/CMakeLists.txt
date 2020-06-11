@@ -19,3 +19,7 @@ target_link_libraries(shortestPathThrust Boost::filesystem )
 
 # IDEs should put the headers in a nice place
 source_group(TREE "${PROJECT_SOURCE_DIR}" PREFIX "Common Files" FILES ${COMMON_FILES})
+
+install(TARGETS shortestPathThrust
+        CONFIGURATIONS Release
+        RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/release)

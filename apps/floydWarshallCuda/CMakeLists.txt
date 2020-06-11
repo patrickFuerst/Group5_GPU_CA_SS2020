@@ -20,3 +20,7 @@ target_link_libraries(floysWarshallCuda  Boost::filesystem )
 
 # IDEs should put the headers in a nice place
 source_group(TREE "${PROJECT_SOURCE_DIR}" PREFIX "Common Files" FILES ${COMMON_FILES})
+
+install(TARGETS floysWarshallCuda
+        CONFIGURATIONS Release
+        RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/release)
