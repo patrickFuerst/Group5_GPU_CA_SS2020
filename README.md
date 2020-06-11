@@ -42,3 +42,10 @@ This saves memory and allocation time.
 6. Write a script, which runs all test with all generated graphs. 
 7. Work on the other points of the assignment. 
 
+### Build all applications
+
+To build all applications run the `build.sh` script. This will install all executables in the `release` folder.
+
+### Create all graphs
+
+To create all graphs run the `createGraphs.sh` script. This will create all graphs file in the folder `data/graphs` folder. 
