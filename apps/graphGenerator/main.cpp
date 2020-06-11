@@ -21,7 +21,6 @@ static void show_usage(std::string name)
 		<< std::endl;
 }
 
-
 int main(int argc, char **argv)
 {
 
@@ -70,6 +69,16 @@ int main(int argc, char **argv)
 	// create graph 
 	unsigned seed = 1234;
 	OurGraph graph = OurGraph::generateGraph(numNodes, density, weightRangeLow, weightRangeHigh, seed);
+
+	std::cout << graph.fletcher64() << std::endl;
+
+	// check for negative cycles and create new graph if it does
+	/*bool hasNegativeCycles = graph.checkNegativeCycles();
+	while (hasNegativeCycles) {
+		seed += 1;
+		OurGraph graph = OurGraph::generateGraph(numNodes, density, weightRangeLow, weightRangeHigh, seed);
+		hasNegativeCycles = graph.checkNegativeCycles();
+	}*/
 
 
 	// safe to file 

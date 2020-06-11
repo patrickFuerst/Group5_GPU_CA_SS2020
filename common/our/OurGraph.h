@@ -34,13 +34,15 @@ public:
 	typedef DistanceProperty::matrix_type DistanceMatrix;
 
 	OurGraph() {};
-	OurGraph(int N, int numEdges) : mNumVertices(N), mNumEdges(numEdges), mEdgeMap(numEdges){};
+	OurGraph(int N, int numEdges, int weightLow) : mNumVertices(N), mNumEdges(numEdges), mEdgeMap(numEdges), mWeightLow(weightLow){};
 	OurGraph(const OurGraph& g) = delete;
 	OurGraph( OurGraph&& g) = default;
 
 	matrix<int> getAdjacencyMatrix();
 	thrust::host_vector<int> getAdjacencyMatrixHostVector();
 	DirectedGraph getBoostGraph();
+	bool checkNegativeCycles();
+	unsigned long fletcher64();
 
 	static OurGraph generateGraph(int N, float density, int weightLow, int weightHigh, unsigned seed = 1234);
 	static OurGraph loadGraph(fs::path files); 
@@ -86,7 +88,7 @@ public:
 
 public:
 
-	int mNumEdges, mNumVertices;
+	int mNumEdges, mNumVertices, mWeightLow;
 
 };
 
@@ -143,7 +145,7 @@ OurGraph OurGraph::generateGraph(int N, float density, int weightLow, int weight
 
 	int possibleNumEdges = N * (N - 1);
 	int allowedNumEdges = density * possibleNumEdges;
-	OurGraph graph(N, allowedNumEdges);
+	OurGraph graph(N, allowedNumEdges, weightLow);
 
 	std::mt19937 eng(seed); // seed the generator
 	std::uniform_int_distribution<> distrVertices(0, N-1); // define the range
@@ -203,4 +205,58 @@ OurGraph OurGraph::loadGraph(fs::path file) {
 	std::cout << "DONE loading graph!" << std::endl;
 
 	return newGraph;
+}
+
+bool OurGraph::checkNegativeCycles()
+{
+	int* dist = new int[this->mNumVertices];
+
+	for (int i = 0; i < this->mNumVertices; i++) {
+		dist[i] = INT_MAX;
+	}
+	dist[0] = 0;
+
+	for (int i = 1; i < this->mNumVertices; i++) {
+		for (auto e : this->mEdgeMap) {
+			int src = e.first.first;
+			int dest = e.first.second;
+			int w = e.second;
+			if (dist[src] != INT_MAX && dist[src] + w < dist[dest]) {
+				dist[dest] = dist[src] + w;
+			}
+		}
+	}
+
+	for (auto e : this->mEdgeMap) {
+		int src = e.first.first;
+		int dest = e.first.second;
+		int w = e.second;
+		if (dist[src] != INT_MAX && dist[src] + w < dist[dest])
+			return true;
+	}
+
+	return false;
+}
+
+unsigned long OurGraph::fletcher64() {
+	unsigned long sum1 = 0;
+	unsigned long sum2 = 0;
+
+	thrust::host_vector<int> dataSigned = this->getAdjacencyMatrixHostVector();
+	if (mWeightLow < 0) {
+		int toAdd = -mWeightLow;
+		thrust::for_each(dataSigned.begin(), dataSigned.end(), [toAdd](int& i) { i == std::numeric_limits<int>::max() ? i = i : i += toAdd; });
+	}
+	
+	thrust::host_vector<unsigned int> data = static_cast<thrust::host_vector<unsigned int>> (dataSigned);
+	
+	for (int i = 0; i < data.size(); ++i)
+	{
+		sum1 = (sum1 + data[i]) % 4294967295;
+		sum2 = (sum2 + sum1) % 4294967295;
+
+		std::cout << data[i] << std::endl;
+	}
+
+	return ((unsigned long) sum2 << 32) | sum1;
 }
