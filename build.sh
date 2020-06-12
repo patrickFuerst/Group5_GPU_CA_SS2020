@@ -5,13 +5,17 @@ rm -rf ./build
 
 echo "Build all applications!"
 
+
 mkdir build 
 cmake -B "./build" 
-cmake --build  build --target ALL_BUILD --config Release
+
+D
+D
+cmake --build  build  --config Release
 
 
 echo "Install all applications" 
-cmake --install build 
+cmake --install build --config Release 
 
 
 

@@ -6,6 +6,6 @@
 *.fatbin
 build/
 
-
+release/*
 *.txt
 *.exe
