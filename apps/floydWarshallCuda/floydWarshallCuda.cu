@@ -51,10 +51,6 @@ void floydWarshallCuda(thrust::host_vector<int>& h_vec)
 	auto timeInit = std::chrono::high_resolution_clock::now();
     
     // Transfer graph to GPU
-    //int matrixSize = graph.mNumVertices * graph.mNumVertices;
-    //int* cudaDistances;
-    //cudaMalloc(&cudaDistances, matrixSize * sizeof(int));
-    //cudaMemcpy(cudaDistances, m.data, matrixSize * sizeof(int), cudaMemcpyHostToDevice);
     int N = sqrt(h_vec.size());
 
     thrust::device_vector<int> d_vec = h_vec;
