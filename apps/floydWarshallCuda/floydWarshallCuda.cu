@@ -47,6 +47,9 @@ int iDivUp(int a, int b)
 
 void floydWarshallCuda(thrust::host_vector<int>& h_vec)
 {
+    // Track subtask time
+	auto timeInit = std::chrono::high_resolution_clock::now();
+    
     // Transfer graph to GPU
     //int matrixSize = graph.mNumVertices * graph.mNumVertices;
     //int* cudaDistances;
@@ -56,13 +59,30 @@ void floydWarshallCuda(thrust::host_vector<int>& h_vec)
 
     thrust::device_vector<int> d_vec = h_vec;
     thrust::device_ptr< int > d_ptr = d_vec.data();
+    
+    // Device memory allocated
+	auto timeHtD = std::chrono::high_resolution_clock::now();
+
     // For each node, iterate distances
     for (int k = 0; k < N; k++) {
         cu_FloydWarshall<<< dim3(iDivUp(N, BLOCKSIZE), N), BLOCKSIZE >>> ( k, thrust::raw_pointer_cast(d_ptr), N );
     }
 
+    // Calculations complete
+	auto timeExec = std::chrono::high_resolution_clock::now();
+
     // Get results back
     h_vec = d_vec;
 
+    // Results moved to host
+    auto timeDtH = std::chrono::high_resolution_clock::now();
 
+    std::chrono::duration<double, std::milli> hostToDevice = timeHtD - timeInit;
+    std::cout << "Copying data from host to device took " << hostToDevice.count() << " ms." << std::endl;
+
+    std::chrono::duration<double, std::milli> exec = timeExec - timeHtD;
+    std::cout << "Executing calculations took " << exec.count() << " ms." << std::endl;
+
+    std::chrono::duration<double, std::milli> deviceToHost = timeDtH - timeExec;
+    std::cout << "Copying results from device to host took " << deviceToHost.count() << " ms." << std::endl;
 }
