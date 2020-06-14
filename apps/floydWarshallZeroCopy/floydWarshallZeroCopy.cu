@@ -32,13 +32,14 @@ void floydWarshallZeroCopy(thrust::host_vector<int>& h_vec)
 {
     int * hostData = thrust::raw_pointer_cast(h_vec.data());
     int N = sqrt(h_vec.size());
+    int size = N * N * sizeof(int);
 
     // Track subtask time
     auto timeInit = std::chrono::high_resolution_clock::now();
     
+    cudaHostAlloc((void **) &hostData, size, cudaHostAllocMapped);
     int * cudaData;
-    cudaMalloc(&cudaData, N * N * sizeof(int));
-    cudaMemcpy(cudaData, hostData, N * N * sizeof(int), cudaMemcpyHostToDevice);
+    cudaHostGetDevicePointer((void **) &cudaData, (void *) hostData, 0);
     
     // Device memory allocated
     auto timeHtD = std::chrono::high_resolution_clock::now();
@@ -50,21 +51,11 @@ void floydWarshallZeroCopy(thrust::host_vector<int>& h_vec)
     // Calculations complete
 	auto timeExec = std::chrono::high_resolution_clock::now();
 
-    // Get results back
-    cudaMemcpy(hostData, cudaData, N * N * sizeof(int), cudaMemcpyDeviceToHost);
-
-    // Results moved to host
-    auto timeDtH = std::chrono::high_resolution_clock::now();
-
     std::chrono::duration<double, std::milli> hostToDevice = timeHtD - timeInit;
     std::cout << "Copying data from host to device took " << hostToDevice.count() << " ms." << std::endl;
 
     std::chrono::duration<double, std::milli> exec = timeExec - timeHtD;
     std::cout << "Executing calculations took " << exec.count() << " ms." << std::endl;
-
-    std::chrono::duration<double, std::milli> deviceToHost = timeDtH - timeExec;
-    std::cout << "Copying results from device to host took " << deviceToHost.count() << " ms." << std::endl;
-
 
     std::cout << "Hello!" << std::endl;
 }
