@@ -13,16 +13,9 @@ void iterKernelNoShared(int k, int *distances, int N) {
     int row = blockIdx.y;
 
     // If we're over the edge of the matrix return
-    if (col >= N) 
+    if ((col >= N) || (distances[N * row + k] == INT_MAX / 2) || (distances[k * N + col] == INT_MAX / 2)) {
         return;
-    
-    // If the current distance is INF, return
-    if (distances[N * row + k] == INT_MAX / 2)
-        return;
-
-    // If the follow up distance is INF, return
-    if(distances[k * N + col] == INT_MAX / 2)
-        return;
+    }
 
     // Otherwise, calculate the distance
     int candidateBetterDistance = distances[N * row + k] + distances[k * N + col];
@@ -86,7 +79,7 @@ void floydWarshallCuda(thrust::host_vector<int>& h_vec)
 
     // For each node, iterate distances
     for (int k = 0; k < N; k++) {
-        iterKernelNoShared<<< dim3(iDivUp(N, BLOCKSIZE), N), BLOCKSIZE >>> ( k, thrust::raw_pointer_cast(d_ptr), N );
+        iterKernelShared<<< dim3(iDivUp(N, BLOCKSIZE), N), BLOCKSIZE >>> ( k, thrust::raw_pointer_cast(d_ptr), N );
     }
 
     // Calculations complete
