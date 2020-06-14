@@ -19,5 +19,6 @@ add_subdirectory("src")
 # The executable code is here
 add_subdirectory("apps/floydWarshallAlgorithm")
 add_subdirectory("apps/floydWarshallCuda")
+add_subdirectory("apps/floydWarshallZeroCopy")
 add_subdirectory("apps/graphGenerator")
 add_subdirectory("apps/shortestPathFinderThrust")
