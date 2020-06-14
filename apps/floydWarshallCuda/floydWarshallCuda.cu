@@ -1,6 +1,7 @@
 
 #include "floydWarshallCuda.h"
 #include <thrust/device_vector.h>
+#include <chrono>
 
 
 #define BLOCKSIZE 256
@@ -56,7 +57,7 @@ void floydWarshallCuda(thrust::host_vector<int>& h_vec)
     int N = sqrt(h_vec.size());
 
     thrust::device_vector<int> d_vec = h_vec;
-    thrust::device_ptr< int > d_ptr = d_vec.data();
+    thrust::device_ptr<int> d_ptr = d_vec.data();
     
     // Device memory allocated
 	auto timeHtD = std::chrono::high_resolution_clock::now();
