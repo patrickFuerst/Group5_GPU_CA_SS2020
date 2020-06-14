@@ -8,7 +8,31 @@
 
 // Doesn't do negative edges!!
 __global__
-void cu_FloydWarshall(int k, int *distances, int N) {
+void iterKernelNoShared(int k, int *distances, int N) {
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y;
+
+    // If we're over the edge of the matrix return
+    if (col >= N) 
+        return;
+    
+    // If the current distance is INF, return
+    if (distances[N * row + k] == INT_MAX / 2)
+        return;
+
+    // If the follow up distance is INF, return
+    if(distances[k * N + col] == INT_MAX / 2)
+        return;
+
+    // Otherwise, calculate the distance
+    int candidateBetterDistance = distances[N * row + k] + distances[k * N + col];
+    if (candidateBetterDistance < distances[N * row + col])
+        distances[N * row + col] = candidateBetterDistance;
+}
+
+// Doesn't do negative edges!!
+__global__
+void iterKernelShared(int k, int *distances, int N) {
     int col = blockIdx.x * blockDim.x + threadIdx.x;
     int row = blockIdx.y;
 
@@ -41,8 +65,6 @@ void cu_FloydWarshall(int k, int *distances, int N) {
         distances[arrayIndex] = candidateBetterDistance;
 }
 
-
-
 int iDivUp(int a, int b)
 {
     return (a % b != 0) ? (a / b + 1) : (a / b);
@@ -64,7 +86,7 @@ void floydWarshallCuda(thrust::host_vector<int>& h_vec)
 
     // For each node, iterate distances
     for (int k = 0; k < N; k++) {
-        cu_FloydWarshall<<< dim3(iDivUp(N, BLOCKSIZE), N), BLOCKSIZE >>> ( k, thrust::raw_pointer_cast(d_ptr), N );
+        iterKernelNoShared<<< dim3(iDivUp(N, BLOCKSIZE), N), BLOCKSIZE >>> ( k, thrust::raw_pointer_cast(d_ptr), N );
     }
 
     // Calculations complete
