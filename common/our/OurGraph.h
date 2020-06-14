@@ -254,8 +254,6 @@ unsigned long OurGraph::fletcher64() {
 	{
 		sum1 = (sum1 + data[i]) % 4294967295;
 		sum2 = (sum2 + sum1) % 4294967295;
-
-		std::cout << data[i] << std::endl;
 	}
 
 	return ((unsigned long) sum2 << 32) | sum1;
