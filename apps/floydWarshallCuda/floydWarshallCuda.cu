@@ -12,7 +12,8 @@ void cu_FloydWarshall(int k, int *distances, int N) {
     int row = blockIdx.y;
 
     // If we're over the edge of the matrix return
-    if (col >= N) return;
+    if (col >= N) 
+        return;
 
     int arrayIndex = N * row + col;
 
@@ -26,13 +27,14 @@ void cu_FloydWarshall(int k, int *distances, int N) {
     
     // If the current distance is INF, return
     if (current == INT_MAX / 2)
-    return;
+        return;
 
     // If the follow up distance is INF, return
     int next = distances[k * N + col];
     if(next == INT_MAX / 2)
-    return;
+        return;
 
+    // Otherwise, calculate the distance
     int candidateBetterDistance = current + next;
     if (candidateBetterDistance < distances[arrayIndex])
         distances[arrayIndex] = candidateBetterDistance;
