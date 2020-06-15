@@ -45,7 +45,7 @@ void floydWarshallZeroCopy(thrust::host_vector<int>& h_vec)
     auto timeHtD = std::chrono::high_resolution_clock::now();
     
     for (int k = 0; k < N; k++) {
-        iterKernelShared<<< dim3(iDivUp(N, BLOCKSIZE), N), BLOCKSIZE >>> (k, cudaData, N);
+        iterKernel<<< dim3(iDivUp(N, BLOCKSIZE), N), BLOCKSIZE >>> (k, cudaData, N);
     }
 
     // Calculations complete
