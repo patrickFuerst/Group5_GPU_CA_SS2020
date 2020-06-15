@@ -28,7 +28,7 @@ int iDivUp(int a, int b)
     return (a % b != 0) ? (a / b + 1) : (a / b);
 }
 
-void floydWarshallManaged(thrust::host_vector<int>& h_vec)
+void floydWarshallManaged(thrust::host_vector<int>& h_vec, double* copyTimings, double* execTimings)
 {
     int * hostData = thrust::raw_pointer_cast(h_vec.data());
     int N = sqrt(h_vec.size());
@@ -52,7 +52,9 @@ void floydWarshallManaged(thrust::host_vector<int>& h_vec)
 
     std::chrono::duration<double, std::milli> hostToDevice = timeHtD - timeInit;
     std::cout << "Copying data from host to device took " << hostToDevice.count() << " ms." << std::endl;
+    *copyTimings += hostToDevice.count();
 
     std::chrono::duration<double, std::milli> exec = timeExec - timeHtD;
     std::cout << "Executing calculations took " << exec.count() << " ms." << std::endl;
+    *execTimings += exec.count();
 }

@@ -19,6 +19,7 @@ static void show_usage(std::string name)
 		<< "\t-h,\tShow this help message\n"
 		<< "\t-f,\tFile containing graph data\n"
 		<< "\t\t\tIf it's a directory the algorithm is run on all files.\n"
+		<< "\t-n,\t Defines how often the algorithm should be executed per graph.\n"
 		<< std::endl;
 }
 
@@ -26,7 +27,7 @@ static void show_usage(std::string name)
 using boost::lexical_cast;
 using boost::bad_lexical_cast;
 
-fs::path evaluateArgs(int argc, char** argv) {
+fs::path evaluateArgs(int argc, char** argv, int* counter) {
 	fs::path dataPath = "";
 
 	if (argc == 1 && argv[1] == "-h") {
@@ -34,15 +35,17 @@ fs::path evaluateArgs(int argc, char** argv) {
 		exit(EXIT_SUCCESS);
 
 	}
-	else if (argc != 3) { //first argument always program name, second is -f flag
-		std::cout << "Please provide the path to the file(s)." << std::endl;
+	else if (argc != 5) { //first argument always program name, second is -f flag, -n is fourth,
+		std::cout << "Please provide the path to the file(s) and the number of loops to be executed." << std::endl;
 		show_usage(argv[0]);
 		exit(EXIT_SUCCESS);
 
 	}
-	else if (argc == 3) {
+	else if (argc == 5) {
 
 		dataPath = argv[2];
+
+		*counter = std::stoi(argv[4]);
 
 		if (fs::exists(dataPath))
 		{

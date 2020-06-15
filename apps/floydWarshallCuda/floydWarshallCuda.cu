@@ -63,7 +63,7 @@ int iDivUp(int a, int b)
     return (a % b != 0) ? (a / b + 1) : (a / b);
 }
 
-void floydWarshallCuda(thrust::host_vector<int>& h_vec)
+void floydWarshallCuda(thrust::host_vector<int>& h_vec, double* copyToDeviceTimings, double* execTimings, double* copyToHostTimings)
 {
     // Track subtask time
 	auto timeInit = std::chrono::high_resolution_clock::now();
@@ -93,10 +93,13 @@ void floydWarshallCuda(thrust::host_vector<int>& h_vec)
 
     std::chrono::duration<double, std::milli> hostToDevice = timeHtD - timeInit;
     std::cout << "Copying data from host to device took " << hostToDevice.count() << " ms." << std::endl;
+    *copyToDeviceTimings += hostToDevice.count();
 
     std::chrono::duration<double, std::milli> exec = timeExec - timeHtD;
     std::cout << "Executing calculations took " << exec.count() << " ms." << std::endl;
+    *execTimings += exec.count();
 
     std::chrono::duration<double, std::milli> deviceToHost = timeDtH - timeExec;
     std::cout << "Copying results from device to host took " << deviceToHost.count() << " ms." << std::endl;
+    *copyToHostTimings += deviceToHost.count();
 }

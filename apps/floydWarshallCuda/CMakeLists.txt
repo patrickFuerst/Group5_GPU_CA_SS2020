@@ -8,19 +8,19 @@ file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DI
 file(GLOB COMMON_FILES "${PROJECT_SOURCE_DIR}/common/*/*.h" )
 
 
-add_executable(floysWarshallCuda ${SOURCES} ${COMMON_FILES})
+add_executable(floydWarshallCuda ${SOURCES} ${COMMON_FILES})
 
 
-set_target_properties(floysWarshallCuda PROPERTIES
+set_target_properties(floydWarshallCuda PROPERTIES
    CUDA_SEPARABLE_COMPILATION ON
 )
 
-target_compile_features(floysWarshallCuda PRIVATE cxx_std_14)
-target_link_libraries(floysWarshallCuda  Boost::filesystem )
+target_compile_features(floydWarshallCuda PRIVATE cxx_std_14)
+target_link_libraries(floydWarshallCuda  Boost::filesystem )
 
 # IDEs should put the headers in a nice place
 source_group(TREE "${PROJECT_SOURCE_DIR}" PREFIX "Common Files" FILES ${COMMON_FILES})
 
-install(TARGETS floysWarshallCuda
+install(TARGETS floydWarshallCuda
         CONFIGURATIONS Release
         RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/release)
