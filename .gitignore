@@ -5,7 +5,7 @@
 *.cubin
 *.fatbin
 build/
-
+data/*/*.txt
+data/*.txt
 release/*
-*.txt
 *.exe
