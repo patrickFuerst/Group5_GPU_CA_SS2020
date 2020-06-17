@@ -7,6 +7,7 @@ struct FindShorter
 {
 	thrust::device_ptr <int> matrix;
 	int n,k; 
+	int inf = std::numeric_limits<int>::max();
 
 	FindShorter(thrust::device_ptr <int> m, int n , int k    ) : 
 		matrix(m), n(n), k(k) {}
@@ -16,10 +17,15 @@ struct FindShorter
 		int i = index / n;
 		int j = index % n;
 		int oldDist = matrix[i * n + j];
-		int newDist = matrix[i * n + k] + matrix[k * n + j];
 
+		int ik = matrix[i * n + k];
+		int jk = matrix[k * n + j];
+
+		if (ik == inf || jk == inf)
+			return oldDist;
+		
+		int newDist = ik + jk;
 		return newDist < oldDist ? newDist : oldDist;
-		//return matrix[i * n + j];
 	}
 
 
