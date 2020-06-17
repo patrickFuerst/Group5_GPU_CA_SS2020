@@ -33,7 +33,6 @@ int main(int argc, char **argv)
 		//		std::cout <<  m[i * graph.mNumVertices + j] << " ";
 		//	}
 		//	std::cout << std::endl;
-
 		//}
 
 		std::cout << " ---- START Thrust implementation ----" << std::endl;
@@ -44,10 +43,8 @@ int main(int argc, char **argv)
 			// not data loading 
 			auto start = std::chrono::high_resolution_clock::now();
 
-
 			floydWarshallThrust(m, &copyToDeviceTimings, &execTimings, &copyToHostTimings);
-			// print sorted array
-
+			
 			// Record end time
 			auto finish = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double, std::milli> total = finish - start;
