@@ -61,7 +61,11 @@ fs::path evaluateArgs(int argc, char** argv, int* counter) {
 				exit(EXIT_SUCCESS);
 			}
 
+		}else {
+			std::cout << "Please provide a correct path to the file(s)." << std::endl;
+			exit(EXIT_SUCCESS);
 		}
+
 
 	}
 
