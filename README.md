@@ -36,10 +36,10 @@ This saves memory and allocation time.
 
 1. Modify current graph generation to allow negative edges but gurantee that no negative cycles are included. 
 2. Implemente a method to compare if graphs are similar.  Maybe Fletcher checksum ? http://www.cs.cornell.edu/~bindel/class/cs5220-f11/code/path.pdf
-3. Implement a loop to run the algorithms multiple time and take the mean time. 
-4. Write performance results, with graphfile name, and graph checksum to a file to compare later. 
-5. Write a script, which creates all graphs we want to test to make it reproducable for all of us. 
-6. Write a script, which runs all test with all generated graphs. 
+3. ~~Implement a loop to run the algorithms multiple time and take the mean time.~~
+4. ~~Write performance results, with graphfile name, and graph checksum to a file to compare later.~~ 
+5. ~~Write a script, which creates all graphs we want to test to make it reproducable for all of us.~~ 
+6. ~~Write a script, which runs all test with all generated graphs.~~ 
 7. Work on the other points of the assignment. 
 8. Transfer Result back from device for all implementations
 
