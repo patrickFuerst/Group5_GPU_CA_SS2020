@@ -41,6 +41,7 @@ This saves memory and allocation time.
 5. Write a script, which creates all graphs we want to test to make it reproducable for all of us. 
 6. Write a script, which runs all test with all generated graphs. 
 7. Work on the other points of the assignment. 
+8. Transfer Result back from device for all implementations
 
 ### Build all applications
 
