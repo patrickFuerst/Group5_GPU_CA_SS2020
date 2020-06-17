@@ -26,7 +26,7 @@ struct FindShorter
 };
 
 
-void floydWarshallThrust(thrust::host_vector<int>& h_vec, double* copyTimings, double* execTimings)
+void floydWarshallThrust(thrust::host_vector<int>& h_vec, double* copyToDeviceTimings, double* execTimings, double* copyToHostTimings)
 {
 	int n = sqrt(h_vec.size());
 
@@ -60,15 +60,15 @@ void floydWarshallThrust(thrust::host_vector<int>& h_vec, double* copyTimings, d
 
 	std::chrono::duration<double, std::milli> hostToDevice = timeHtD - timeInit;
 	std::cout << "Copying data from host to device took " << hostToDevice.count() << " ms." << std::endl;
-	*copyTimings += hostToDevice.count();
-   
+	*copyToDeviceTimings += hostToDevice.count();
+
 	std::chrono::duration<double, std::milli> exec = timeExec - timeHtD;
 	std::cout << "Executing calculations took " << exec.count() << " ms." << std::endl;
 	*execTimings += exec.count();
 
 	std::chrono::duration<double, std::milli> deviceToHost = timeDtH - timeExec;
 	std::cout << "Copying data from device to host took " << deviceToHost.count() << " ms." << std::endl;
-	*copyTimings += deviceToHost.count();
+	*copyToHostTimings += deviceToHost.count();
 
 
 }
