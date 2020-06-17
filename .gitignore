@@ -9,3 +9,4 @@ data/*/*.txt
 data/*.txt
 release/*
 *.exe
+data/benchmarks/
