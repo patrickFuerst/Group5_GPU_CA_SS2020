@@ -1,3 +1,4 @@
+#!/bin/sh
 
 
 num_nodes=(10 1000)

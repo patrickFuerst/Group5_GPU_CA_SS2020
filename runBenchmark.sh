@@ -1,11 +1,15 @@
+#!/bin/sh
+
+NUM_RUNS=$1
+
 mkdir -p ./data/benchmarks
 
-./release/floydWarshallAlgorithm -f ./data/graphs -n $1
+./release/floydWarshallAlgorithm -f ./data/graphs -n $NUM_RUNS
 
-./release/floydWarshallCuda -f ./data/graphs -n $1
+./release/floydWarshallCuda -f ./data/graphs -n $NUM_RUNS
 
-./release/floydWarshallThrust  -f ./data/graphs -n $1
+./release/floydWarshallThrust  -f ./data/graphs -n $NUM_RUNS
 
-./release/floysWarshallZeroCopy -f ./data/graphs -n $1
+./release/floydWarshallZeroCopy -f ./data/graphs -n $NUM_RUNS
 
-./release/floysWarshallManaged -f ./data/graphs -n $1
+./release/floydWarshallManaged -f ./data/graphs -n $NUM_RUNS
