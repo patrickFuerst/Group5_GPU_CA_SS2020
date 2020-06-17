@@ -15,12 +15,11 @@
 int main(int argc, char **argv)
 {
     std::cout << "Thrust v " << THRUST_MAJOR_VERSION << "." << THRUST_MINOR_VERSION << std::endl;
-
 	int loopCount = 1;
 	auto path = evaluateArgs(argc, argv, &loopCount);
     auto graphFiles = getGraphFiles(path);
 	
-	std::ofstream out("../../../data/benchmarks/thrustTimings_" + std::to_string(loopCount) + "_loops.csv");
+	std::ofstream out("./data/benchmarks/thrustTimings_" + std::to_string(loopCount) + "_loops.csv");
 	out << "graphFile, checksum, copyTimeHostDevice, executionTime, copyTimeDeviceHost, totalTime" << std::endl;
 
 	for (auto filePath : graphFiles) {
@@ -64,8 +63,8 @@ int main(int argc, char **argv)
 		std::cout << "Average total time was " << totalTimings / loopCount << " ms." << std::endl;
 		
 		std::string path = filePath.generic_string();
-		out << path.substr(path.rfind("/") + 1) << "," << graph.fletcher64() << "," << copyToDeviceTimings / loopCount << "," << execTimings / loopCount << "," << copyToHostTimings / loopCount << "," << totalTimings / loopCount << std::endl;
-		out.close();
+		out << path.substr(path.rfind("/") + 1) << "," << fletcher64ForVector(m) << "," << copyToDeviceTimings / loopCount << "," << execTimings / loopCount << "," << copyToHostTimings / loopCount << "," << totalTimings / loopCount << std::endl;
+		
 		
 		//for (int i = 0; i < graph.mNumVertices; i++) {
 		//	for (int j = 0; j < graph.mNumVertices; j++) {
@@ -83,5 +82,5 @@ int main(int argc, char **argv)
 
 	}
 
-	
+	out.close();
 }

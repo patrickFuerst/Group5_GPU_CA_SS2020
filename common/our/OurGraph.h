@@ -42,7 +42,6 @@ public:
 	thrust::host_vector<int> getAdjacencyMatrixHostVector();
 	DirectedGraph getBoostGraph();
 	bool checkNegativeCycles();
-	unsigned long fletcher64();
 
 	static OurGraph generateGraph(int N, float density, int weightLow, int weightHigh, unsigned seed = 1234);
 	static OurGraph generateGraphOptimized(int N, float density, int weightLow, int weightHigh, unsigned seed = 1234);
@@ -324,25 +323,4 @@ bool OurGraph::checkNegativeCycles()
 	}
 
 	return false;
-}
-
-unsigned long OurGraph::fletcher64() {
-	unsigned long sum1 = 0;
-	unsigned long sum2 = 0;
-
-	thrust::host_vector<int> dataSigned = this->getAdjacencyMatrixHostVector();
-	if (mWeightLow < 0) {
-		int toAdd = -mWeightLow;
-		thrust::for_each(dataSigned.begin(), dataSigned.end(), [toAdd](int& i) { i == std::numeric_limits<int>::max() ? i = i : i += toAdd; });
-	}
-	
-	thrust::host_vector<unsigned int> data = static_cast<thrust::host_vector<unsigned int>> (dataSigned);
-	
-	for (int i = 0; i < data.size(); ++i)
-	{
-		sum1 = (sum1 + data[i]) % 4294967295;
-		sum2 = (sum2 + sum1) % 4294967295;
-	}
-
-	return ((unsigned long) sum2 << 32) | sum1;
 }
