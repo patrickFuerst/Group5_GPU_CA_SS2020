@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     auto path = evaluateArgs(argc, argv, &loopCount);
     auto graphFiles = getGraphFiles(path);
 
-	std::ofstream out("../../../data/benchmarks/zeroCopyTimings_" + std::to_string(loopCount) + "_loops.csv");
+	std::ofstream out("./data/benchmarks/zeroCopyTimings_" + std::to_string(loopCount) + "_loops.csv");
 	out << "graphFile, checksum, copyTimeHostDevice, executionTime, totalTime" << std::endl;
 
 	gpuDeviceInit(-1);
@@ -68,9 +68,9 @@ int main(int argc, char **argv)
 		std::string path = filePath.generic_string();
 
 
-		out << path.substr(path.rfind("/") + 1) << "," << graph.fletcher64() << "," << copyTimings / loopCount << "," << execTimings / loopCount << "," << totalTimings / loopCount << std::endl;
+		out << path.substr(path.rfind("/") + 1) << "," << fletcher64ForVector(m) << "," << copyTimings / loopCount << "," << execTimings / loopCount << "," << totalTimings / loopCount << std::endl;
 
-		out.close();
+		
 
 		//for (int i = 0; i < graph.mNumVertices; i++) {
 		//	for (int j = 0; j < graph.mNumVertices; j++) {
@@ -83,5 +83,6 @@ int main(int argc, char **argv)
 
 	}
 
+	out.close();
 	
 }

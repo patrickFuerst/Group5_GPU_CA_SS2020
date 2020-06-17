@@ -13,6 +13,7 @@
 
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/graph/floyd_warshall_shortest.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 
 namespace fs =  boost::filesystem;
 
@@ -65,8 +66,8 @@ int main(int argc, char **argv)
 	auto path = evaluateArgs(argc, argv, &loopCount);
 	auto graphFiles = getGraphFiles(path);
 
-	std::ofstream out("../../../data/benchmarks/serialTimings_" + std::to_string(loopCount) + "_loops.csv");
-	out << "graphFile, checksum, ourTime[ms], boostTime[ms]" << std::endl;
+	std::ofstream out("./data/benchmarks/serialTimings_" + std::to_string(loopCount) + "_loops.csv");
+	out << "graphFile, ourChecksum, ourTime[ms], boostTime[ms], boostChecksum" << std::endl;
 
 	for (auto filePath : graphFiles) {
 
@@ -110,7 +111,7 @@ int main(int argc, char **argv)
 
 			std::string path = filePath.generic_string();
 
-			out << path.substr(path.rfind("/") + 1) << "," << graph.fletcher64() << "," << execTimings / loopCount << ",";
+			out << path.substr(path.rfind("/") + 1) << "," << fletcher64ForMatrix(m) << "," << execTimings / loopCount << ",";
 		
 
 		}
@@ -146,7 +147,15 @@ int main(int argc, char **argv)
 
 		std::cout << "Average time taken by boost " << execTimings / loopCount << " ms." << std::endl;
 
-		out << execTimings / loopCount << std::endl;
+		matrix<int> resultMatrix(graph.mNumVertices, graph.mNumVertices);
+
+		for (int i = 0; i < graph.mNumVertices; i++) {
+			for (int j = 0; j < graph.mNumVertices; j++) {
+				resultMatrix(i, j) = d[i][j];
+			}
+		}
+
+		out << execTimings / loopCount << "," << fletcher64ForMatrix(resultMatrix) << std::endl;
 
 	}
 

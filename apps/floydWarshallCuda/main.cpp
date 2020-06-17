@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     auto path = evaluateArgs(argc, argv, &loopCount);
     auto graphFiles = getGraphFiles(path);
 
-	std::ofstream out("../../../data/benchmarks/nativeCudaTimings_" + std::to_string(loopCount) + "_loops.csv");
+	std::ofstream out("./data/benchmarks/nativeCudaTimings_" + std::to_string(loopCount) + "_loops.csv");
 	out << "graphFile, checksum, copyTimeHostDevice, executionTime, copyTimeDeviceHost, totalTime" << std::endl;
 
 	gpuDeviceInit(-1);
@@ -69,12 +69,12 @@ int main(int argc, char **argv)
 		std::string path = filePath.generic_string();
 
 
-		out << path.substr(path.rfind("/") + 1) << "," << graph.fletcher64() << "," << copyToDeviceTimings / loopCount << "," << execTimings / loopCount << "," << copyToHostTimings / loopCount << "," << totalTimings / loopCount << std::endl;
+		out << path.substr(path.rfind("/") + 1) << "," << fletcher64ForVector(m) << "," << copyToDeviceTimings / loopCount << "," << execTimings / loopCount << "," << copyToHostTimings / loopCount << "," << totalTimings / loopCount << std::endl;
 
-		out.close();
+		
 
 
 	}
 
-	
+	out.close();
 }
