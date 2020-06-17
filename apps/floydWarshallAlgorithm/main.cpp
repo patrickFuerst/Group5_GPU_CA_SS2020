@@ -30,17 +30,18 @@ void floysWarshall(matrix<int>& m) {
 	assert(m.size1() == m.size2());
 	int n = m.size1();
 	int inf = std::numeric_limits<int>::max();
-
-	for (int k = 0; k < n; k++) {
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				if (m(j, k) > m(j, i) + m(i, k)) {
-					int d = m(j, i) + m(i, k);
-					m(j, k) = m(j, i) + m(i, k);
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (m(j, i) < inf) {
+				for (int k = 0; k < n; k++) {
+					if (m(i, k) < inf) {
+						if (m(j, k) > m(j, i) + m(i, k)) {
+							int d = m(j, i) + m(i, k);
+							m(j, k) = m(j, i) + m(i, k);
+						}
+					}
 				}
-					
 			}
-			
 		}
 	}
 	// Currently the graph generation algorithm only has positive edges
