@@ -203,7 +203,7 @@ OurGraph OurGraph::generateGraph(int N, float density, int weightLow, int weight
 	}
 
 	std::cout << "Constructed graph with " << addNumEdges << " edges." << std::endl;
-	std::cout << "Graph checksum is  " << graph.fletcher64() << std::endl;
+	//std::cout << "Graph checksum is  " << fletcher64ForMatrix(graph.getAdjacencyMatrix()) << std::endl;
 
 	return graph;
 
@@ -273,7 +273,7 @@ OurGraph OurGraph::generateGraphOptimized(int N, float density, int weightLow, i
 	}
 
 	std::cout << "Constructed graph with " << addNumEdges << " edges." << std::endl;
-	std::cout << "Graph checksum is  " << graph.fletcher64() << std::endl;
+	//std::cout << "Graph checksum is  " << fletcher64ForMatrix(graph.getAdjacencyMatrix()) << std::endl;
 
 	return graph;
 
