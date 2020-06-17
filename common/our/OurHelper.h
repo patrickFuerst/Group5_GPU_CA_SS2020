@@ -95,33 +95,46 @@ std::vector<fs::path> getGraphFiles(fs::path dataPath) {
 
 }
 
+unsigned long long fletcher64(std::vector<int> v) {
+
+	// comment in if checksum of sorted vector is desired
+	//std::sort(v.begin(), v.end());
+
+	unsigned long long sum1 = 0, sum2 = 0;
+
+	for (int i = 0; i < v.size(); i++) {
+		sum1 = (sum1 + v[i]) % 4294967295;
+		sum2 = (sum2 + sum1) % 4294967295;
+	}
+
+
+	return (sum2 << 32) | sum1;
+}
+
+
 
 unsigned long long fletcher64ForMatrix(matrix<int> m) {
 	assert(m.size1() == m.size2());
 	int n = m.size1();
-	unsigned long long sum1 = 0, sum2 = 0;
 	
-
-	
+	std::vector<int> v;
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
-			sum1 = (sum1 + m(i, j)) % 4294967295;
-			sum2 = (sum2 + sum1) % 4294967295;
+			v.push_back(m(i, j));
 		}
 	}
-	
 
-	return (sum2 << 32) | sum1;
+	return fletcher64(v);
+
 }
 
 unsigned long long fletcher64ForVector(thrust::host_vector<int> m) {
-	unsigned long long sum1 = 0, sum2 = 0;
-
-	for (int i = 0; i < m.size(); i++) {
-		sum1 = (sum1 + m[i]) % 4294967295;
-		sum2 = (sum2 + sum1) % 4294967295;
-	}
+	std::vector<int> v;
 	
+	for (int i = 0; i < m.size(); i++) {
+		v.push_back(m[i]);
+	}
 
-	return (sum2 << 32) | sum1;
+	return fletcher64(v);
 }
+
