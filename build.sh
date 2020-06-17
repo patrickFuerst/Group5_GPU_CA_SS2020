@@ -7,8 +7,8 @@ rm -rf ./build
 echo "Build all applications!"
 
 mkdir build 
-cmake -B "./build" 
-cmake --build  build  --config Release
+cmake -B "./build"  
+cmake --build  build  --config Release -j 8
 
 echo "Install all applications" 
 cmake --install build --config Release 
