@@ -45,7 +45,8 @@ public:
 	unsigned long fletcher64();
 
 	static OurGraph generateGraph(int N, float density, int weightLow, int weightHigh, unsigned seed = 1234);
-	static OurGraph loadGraph(fs::path files); 
+	static OurGraph generateGraphOptimized(int N, float density, int weightLow, int weightHigh, unsigned seed = 1234);
+	static OurGraph loadGraph(fs::path files);
 	
 
 	friend std::ostream& operator << (std::ostream& out, const OurGraph& obj)
@@ -142,56 +143,143 @@ OurGraph::DirectedGraph OurGraph::getBoostGraph() {
 
 OurGraph OurGraph::generateGraph(int N, float density, int weightLow, int weightHigh, unsigned seed) {
 
+	unsigned int possibleNumEdges = N * (N - 1);
+	unsigned int allowedNumEdges = density * possibleNumEdges;
+	unsigned int addNumEdges = 0;
+	unsigned int notAddedVerticesCount = 0;
 
-	int possibleNumEdges = N * (N - 1);
-	int allowedNumEdges = density * possibleNumEdges;
 	OurGraph graph(N, allowedNumEdges, weightLow);
 
 	std::mt19937 eng(seed); // seed the generator
-	std::uniform_int_distribution<> distrVertices(0, N-1); // define the range
+	std::uniform_int_distribution<> distrVertices(0, N - 1); // define the range
 	std::uniform_int_distribution<> distrWeights(weightLow, weightHigh); // define the range
 
-	std::vector<int> tmp;
-	std::iota(tmp.begin(), tmp.end(), 1); // fill with increasing numbers
+	std::vector<int> tmp(N);
+	std::iota(tmp.begin(), tmp.end(), 0); // fill with increasing numbers
+
+	std::cout << "Constructing graph with " << N << " vertices and " << allowedNumEdges << " allowed edges." << std::endl;
 
 	std::set<int> vertexNums(tmp.begin(), tmp.end());
+	tmp.clear();
+	std::cout << "Progress:";
+	for (int i = 0; i < allowedNumEdges; ) {
 
-	for (int i = 0; i < allowedNumEdges; i++) {
+		bool insert_success = false;
 
-		bool edgeAlreadyInGraph = false;
-		do
-		{
-			int u = distrVertices(eng);
-			int v;
-			do {
-				v = distrVertices(eng);
-			} while (u == v);
+		int u = distrVertices(eng);
+		int v;
+		do {
+			v = distrVertices(eng);
+		} while (u == v);
 
-			int weight = distrWeights(eng);
-			vertexNums.erase(u);
-			vertexNums.erase(v);
-			auto newEdge = OurGraph::Edge(u, v);
-			auto result = graph.mEdgeMap.emplace(newEdge, weight);
-			edgeAlreadyInGraph = !result.second;
+		int weight = distrWeights(eng);
+		// if we conntected two vertices we can remove it 
+		vertexNums.erase(u);
+		vertexNums.erase(v);
+		auto newEdge = OurGraph::Edge(u, v);
+		auto result = graph.mEdgeMap.emplace(newEdge, weight);
+		insert_success = result.second;
 
-		} while (edgeAlreadyInGraph);
-
+		if (insert_success) {
+			i++;
+			addNumEdges++;
+			// print progress
+			if (i % (allowedNumEdges / 10) == 0)
+				std::cout << float(addNumEdges) / allowedNumEdges  * 100<< "%,";
+		}
+		
 	}
 
+	std::cout << std::endl;
 	//if their are vertices left which are not connected 
+	std::cout << "Need to add " << vertexNums.size() << " to get fully connected graph." << std::endl;
 	for (auto v : vertexNums) {
 		int u = distrVertices(eng);
 		int weight = distrWeights(eng);
 		auto newEdge = OurGraph::Edge(u, v);
 		auto result = graph.mEdgeMap.emplace(newEdge, weight);
 		assert(result.second == false); // this edge should not be contained in the graph already
+		addNumEdges++;
+		
 	}
 
-	std::cout << "Constructed graph with " << allowedNumEdges << " edges." << std::endl;
+	std::cout << "Constructed graph with " << addNumEdges << " edges." << std::endl;
+	std::cout << "Graph checksum is  " << graph.fletcher64() << std::endl;
 
 	return graph;
 
 }
+
+
+OurGraph OurGraph::generateGraphOptimized(int N, float density, int weightLow, int weightHigh, unsigned seed) {
+
+	unsigned int possibleNumEdges = N * (N - 1);
+	unsigned int NSquared = N * N;
+	unsigned int allowedNumEdges = density * possibleNumEdges;
+	unsigned int addNumEdges = 0;
+	unsigned int notAddedVerticesCount = 0;
+
+	OurGraph graph(N, allowedNumEdges, weightLow);
+
+	std::mt19937 eng(seed); // seed the generator
+	std::uniform_int_distribution<> distrWeights(weightLow, weightHigh); // define the range
+	std::uniform_real_distribution<double> unif(0, 1);
+	std::uniform_int_distribution<> distrVertices(0, N - 1); // define the range
+
+	std::vector<int> tmp(N);
+	std::iota(tmp.begin(), tmp.end(), 0); // fill with increasing numbers
+	std::set<int> vertexNums(tmp.begin(), tmp.end());
+	tmp.clear();
+
+	std::cout << "Constructing graph with " << N << " vertices and " << allowedNumEdges << " allowed edges." << std::endl;
+	std::cout << "Progress:";
+
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+
+			if (i != j) {
+
+				bool shouldAdd = unif(eng) < density;
+				if (shouldAdd) {
+					auto newEdge = OurGraph::Edge(i, j);
+					int weight = distrWeights(eng);
+					auto result = graph.mEdgeMap.emplace(newEdge, weight);
+					assert(result.second == true); // this edge should not be contained in the graph already
+					addNumEdges++;
+					// if we conntected two vertices we can remove it 
+					vertexNums.erase(i);
+					vertexNums.erase(j);
+					// print progress
+					if (addNumEdges % (allowedNumEdges / 10) == 0)
+						std::cout << int(float(addNumEdges) / allowedNumEdges * 100) << "%,";
+
+				}
+
+			}
+		}
+	}
+	std::cout << std::endl;
+
+
+	//if their are vertices left which are not connected 
+	std::cout << "Need to add " << vertexNums.size() << " to get fully connected graph." << std::endl;
+	for (auto v : vertexNums) {
+		int u = distrVertices(eng);
+		int weight = distrWeights(eng);
+		auto newEdge = OurGraph::Edge(u, v);
+		auto result = graph.mEdgeMap.emplace(newEdge, weight);
+		assert(result.second == false); // this edge should not be contained in the graph already
+		addNumEdges++;
+
+	}
+
+	std::cout << "Constructed graph with " << addNumEdges << " edges." << std::endl;
+	std::cout << "Graph checksum is  " << graph.fletcher64() << std::endl;
+
+	return graph;
+
+}
+
 
 OurGraph OurGraph::loadGraph(fs::path file) {
 	

@@ -4,8 +4,9 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
+#include <chrono>
 #include <boost/lexical_cast.hpp>
-
+#include <boost/graph/graphviz.hpp>
 #include "OurGraph.h"
 
 static void show_usage(std::string name)
@@ -68,9 +69,12 @@ int main(int argc, char **argv)
 
 	// create graph 
 	unsigned seed = 1234;
-	OurGraph graph = OurGraph::generateGraph(numNodes, density, weightRangeLow, weightRangeHigh, seed);
+	auto start = std::chrono::high_resolution_clock::now();
+	OurGraph graph = OurGraph::generateGraphOptimized(numNodes, density, weightRangeLow, weightRangeHigh, seed);
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> total = end - start;
 
-	std::cout << graph.fletcher64() << std::endl;
+	std::cout << "Graph creation took: " << total.count() << std::endl;
 
 	// check for negative cycles and create new graph if it does
 	/*bool hasNegativeCycles = graph.checkNegativeCycles();
@@ -83,9 +87,17 @@ int main(int argc, char **argv)
 
 	// safe to file 
 	std::stringstream sstm;
-	sstm << "graph_" << numNodes << "_" << density << "_" << weightRangeLow << "_" << weightRangeHigh << "_" << seed << ".txt";
+	sstm << "graph_" << numNodes << "_" << density << "_" << weightRangeLow << "_" << weightRangeHigh << "_" << seed;
 	std::string fileName = sstm.str();
-	std::ofstream out(fileName);
+
+	// Write out the graph for visualization
+	//std::ofstream viz_file(fileName + ".dot");
+	//auto boostg = graph.getBoostGraph();
+	//write_graphviz(viz_file, boostg);
+	//viz_file.close();
+
+
+	std::ofstream out(fileName + ".txt");
 	out << graph;
 	out.close();
 
