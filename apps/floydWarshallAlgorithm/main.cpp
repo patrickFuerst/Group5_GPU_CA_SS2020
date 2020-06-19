@@ -101,8 +101,10 @@ int main(int argc, char **argv)
 				//}
 
 				std::chrono::duration<double, std::milli> elapsed = finish - start;
-				std::cout << "Our implementation took " << elapsed.count() << " ms." << std::endl;
-
+				#pragma omp critical
+				{
+					std::cout << "Our implementation took " << elapsed.count() << " ms." << std::endl;
+				}
 				#pragma omp atomic
 				execTimings += elapsed.count();
 
