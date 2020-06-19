@@ -50,3 +50,7 @@ To build all applications run the `build.sh` script. This will install all execu
 ### Create all graphs
 
 To create all graphs run the `createGraphs.sh` script. This will create all graphs file in the folder `data/graphs` folder. 
+
+### Run all benchmarks
+
+To run all benchmarks run the `runBenchmark.sh` script. This will run all implementations with all generated graphs and save the result of each implementation to the `data/benchmarks` folder.
