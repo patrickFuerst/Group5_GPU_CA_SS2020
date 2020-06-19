@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 			auto m = graph.getAdjacencyMatrix();
 
 			std::cout << " ---- START our serial implementation ----" << std::endl;
-			#pragma omp parallel for num_threads(4)
+			#pragma omp parallel for firstprivate(m)
 			for (int i = 0; i < loopCount; i++) {
 				// Record start time
 				// We actually just track the alorithm implementation 
@@ -101,9 +101,9 @@ int main(int argc, char **argv)
 				//}
 
 				std::chrono::duration<double, std::milli> elapsed = finish - start;
-				#pragma omp critical	
 				std::cout << "Our implementation took " << elapsed.count() << " ms." << std::endl;
 
+				#pragma omp atomic
 				execTimings += elapsed.count();
 
 			}
