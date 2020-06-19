@@ -293,7 +293,7 @@ OurGraph OurGraph::generateGraphOptimized(int N, float density, int weightLow, i
 
 OurGraph OurGraph::loadGraph(fs::path file) {
 	
-	std::cout << "Loading graph!" << std::endl;
+	std::cout << "Loading graph from file: " << file.filename().string() << std::endl;
 
 	OurGraph newGraph;
 	std::ifstream in(file.string());
