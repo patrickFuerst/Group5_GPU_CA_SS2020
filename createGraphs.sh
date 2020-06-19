@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-num_nodes=(10 1000)
+num_nodes=(10 100 1000 10000 20000)
 graph_densities=(0.1 0.3 0.5 0.7 0.9 1.0)
 
 low_weight=1
