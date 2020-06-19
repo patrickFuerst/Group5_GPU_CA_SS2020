@@ -13,6 +13,7 @@ add_executable(floydWarshallZeroCopy ${SOURCES} ${COMMON_FILES})
 
 set_target_properties(floydWarshallZeroCopy PROPERTIES
    CUDA_SEPARABLE_COMPILATION ON
+   CUDA_STANDARD 11
 )
 
 target_compile_features(floydWarshallZeroCopy PRIVATE cxx_std_14)
