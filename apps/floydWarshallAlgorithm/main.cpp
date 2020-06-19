@@ -67,6 +67,7 @@ int main(int argc, char **argv)
 	int loopCount = 1;
 	auto path = evaluateArgs(argc, argv, &loopCount);
 	auto graphFiles = getGraphFiles(path);
+	bool useOpenMP = true;
 
 	std::ofstream out("./data/benchmarks/serialTimings_" + std::to_string(loopCount) + "_loops.csv");
 	out << "graphFile, ourChecksum, ourTime[ms], boostTime[ms], boostChecksum" << std::endl;
@@ -78,9 +79,10 @@ int main(int argc, char **argv)
 		
 		{ // scope graph matrix so it gets deleted when done and doesn't cosnume memory 
 			auto m = graph.getAdjacencyMatrix();
+			matrix<int> res;
 
 			std::cout << " ---- START our serial implementation ----" << std::endl;
-			#pragma omp parallel for firstprivate(m)
+			#pragma omp parallel for firstprivate(m) if(useOpenMP)
 			for (int i = 0; i < loopCount; i++) {
 				// Record start time
 				// We actually just track the alorithm implementation 
@@ -100,6 +102,10 @@ int main(int argc, char **argv)
 
 				//}
 
+				if(omp_get_thread_num() == 0){
+					res = m;
+				}
+
 				std::chrono::duration<double, std::milli> elapsed = finish - start;
 				#pragma omp critical
 				{
@@ -116,18 +122,19 @@ int main(int argc, char **argv)
 
 			std::string path = filePath.generic_string();
 
-			out << path.substr(path.rfind("/") + 1) << "," << fletcher64ForMatrix(m) << "," << execTimings / loopCount << ",";
+			out << path.substr(path.rfind("/") + 1) << "," << fletcher64ForMatrix(res) << "," << execTimings / loopCount << ",";
 		
 
 		}
 
 		auto g = graph.getBoostGraph();
-		OurGraph::DistanceMatrix d(graph.mNumVertices);
+		OurGraph::DistanceMatrix d(graph.mNumVertices), res(graph.mNumVertices);
 		boost::property_map<OurGraph::DirectedGraph, boost::edge_weight_t>::type weightmap = boost::get(boost::edge_weight, g);
 		execTimings = 0;
 
 		std::cout << " ---- START boost serial implementation ----" << std::endl;
 
+		#pragma omp parallel for firstprivate(g,d,weightmap) if(useOpenMP)
 		for (int i = 0; i < loopCount; i++) {
 			auto start = std::chrono::high_resolution_clock::now();
 			bool result = boost::floyd_warshall_all_pairs_shortest_paths(g, d, weight_map(weightmap));
@@ -141,9 +148,16 @@ int main(int argc, char **argv)
 
 			//}
 
-			std::chrono::duration<double, std::milli> elapsed = finish - start;
-			std::cout << "Boost implementation took " << elapsed.count() << " ms." << std::endl;
+			if(omp_get_thread_num() == 0){
+				res = d;
+			}
 
+			std::chrono::duration<double, std::milli> elapsed = finish - start;
+			#pragma omp critical
+			{
+				std::cout << "Boost implementation took " << elapsed.count() << " ms." << std::endl;
+			}
+			#pragma omp atomic
 			execTimings += elapsed.count();
 
 		}
@@ -156,7 +170,7 @@ int main(int argc, char **argv)
 
 		for (int i = 0; i < graph.mNumVertices; i++) {
 			for (int j = 0; j < graph.mNumVertices; j++) {
-				resultMatrix(i, j) = d[i][j];
+				resultMatrix(i, j) = res[i][j];
 			}
 		}
 
