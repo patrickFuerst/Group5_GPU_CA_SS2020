@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <chrono>
+#include <omp.h>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
@@ -79,7 +80,7 @@ int main(int argc, char **argv)
 			auto m = graph.getAdjacencyMatrix();
 
 			std::cout << " ---- START our serial implementation ----" << std::endl;
-
+			#pragma omp parallel for
 			for (int i = 0; i < loopCount; i++) {
 				// Record start time
 				// We actually just track the alorithm implementation 
