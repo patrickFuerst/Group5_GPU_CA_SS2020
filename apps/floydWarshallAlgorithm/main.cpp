@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 			auto m = graph.getAdjacencyMatrix();
 
 			std::cout << " ---- START our serial implementation ----" << std::endl;
-			#pragma omp parallel for
+			#pragma omp parallel for num_threads(4)
 			for (int i = 0; i < loopCount; i++) {
 				// Record start time
 				// We actually just track the alorithm implementation 
