@@ -80,8 +80,9 @@ void floydWarshallCuda(thrust::host_vector<int>& h_vec, double* copyToDeviceTimi
     // For each node, iterate distances
     for (int k = 0; k < N; k++) {
         iterKernelShared<<< dim3(iDivUp(N, BLOCKSIZE), N), BLOCKSIZE >>> ( k, thrust::raw_pointer_cast(d_ptr), N );
-        cudaDeviceSynchronize();
     }
+    
+    cudaDeviceSynchronize();
 
     // Calculations complete
 	auto timeExec = std::chrono::high_resolution_clock::now();
