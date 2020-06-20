@@ -119,12 +119,10 @@ int main(int argc, char **argv)
 			std::cout << " ---- END our serial implementation ----" << std::endl;
 
 			std::cout << "Average time taken by ours " << execTimings / loopCount << " ms." << std::endl;
+			std::cout << "Checksum " << fletcher64ForMatrix(res) << std::endl;
 
 			std::string path = filePath.generic_string();
-
 			out << path.substr(path.rfind("/") + 1) << "," << fletcher64ForMatrix(res) << "," << execTimings / loopCount << ",";
-		
-
 		}
 
 		auto g = graph.getBoostGraph();
@@ -174,6 +172,7 @@ int main(int argc, char **argv)
 			}
 		}
 
+		std::cout << "Checksum " << fletcher64ForMatrix(resultMatrix) << std::endl;
 		out << execTimings / loopCount << "," << fletcher64ForMatrix(resultMatrix) << std::endl;
 
 	}
