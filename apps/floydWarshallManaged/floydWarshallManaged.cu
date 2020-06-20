@@ -59,14 +59,11 @@ void floydWarshallManaged(thrust::host_vector<int>& h_vec, double* copyTimings, 
     auto timeDtH = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double, std::milli> hostToDevice = timeHtD - timeInit;
-    std::cout << "Copying data from host to device took " << hostToDevice.count() << " ms." << std::endl;
     *copyTimings += hostToDevice.count();
 
     std::chrono::duration<double, std::milli> exec = timeExec - timeHtD;
-    std::cout << "Executing calculations took " << exec.count() << " ms." << std::endl;
     *execTimings += exec.count();
 
     std::chrono::duration<double, std::milli> deviceToHost = timeDtH - timeExec;
-    std::cout << "Copying data from device to host took " << deviceToHost.count() << " ms." << std::endl;
     *copyTimings += deviceToHost.count();
 }

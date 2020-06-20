@@ -52,13 +52,9 @@ void floydWarshallZeroCopy(thrust::host_vector<int>& h_vec, double* copyTimings,
         auto timeExec = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double, std::milli> hostToDevice = timeHtD - timeInit;
-        std::cout << "Copying data from host to device took " << hostToDevice.count() << " ms." << std::endl;
-
         *copyTimings += hostToDevice.count();
 
         std::chrono::duration<double, std::milli> exec = timeExec - timeHtD;
-        std::cout << "Executing calculations took " << exec.count() << " ms." << std::endl;
-
         *execTimings += exec.count();
 
         cudaFreeHost(hostData);
