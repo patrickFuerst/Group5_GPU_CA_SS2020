@@ -37,7 +37,7 @@ void floydWarshallZeroCopy(thrust::host_vector<int>& h_vec, double* copyTimings,
         // Track subtask time
         auto timeInit = std::chrono::high_resolution_clock::now();
 
-        cudaHostAlloc((void**)&hostData, size, cudaHostAllocMapped);
+        cudaHostRegister(hostData, size, 0);
         int* cudaData;
         cudaHostGetDevicePointer((void**)&cudaData, (void*)hostData, 0);
 
@@ -48,6 +48,8 @@ void floydWarshallZeroCopy(thrust::host_vector<int>& h_vec, double* copyTimings,
             iterKernel << < dim3(iDivUp(N, BLOCKSIZE), N), BLOCKSIZE >> > (k, cudaData, N);
         }
 
+        cudaDeviceSynchronize();
+        
         // Calculations complete
         auto timeExec = std::chrono::high_resolution_clock::now();
 
@@ -62,9 +64,4 @@ void floydWarshallZeroCopy(thrust::host_vector<int>& h_vec, double* copyTimings,
         *execTimings += exec.count();
 
         cudaFreeHost(hostData);
-
- 
-
-    
-    
 }
