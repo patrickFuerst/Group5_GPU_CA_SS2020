@@ -50,10 +50,8 @@ void floydWarshallThrust(thrust::host_vector<int>& h_vec, double* copyToDeviceTi
 	auto timeHtD = std::chrono::high_resolution_clock::now();
 
 	for (int k = 0; k < n; k++) {
-
 		thrust::transform(c0, c1,result.begin(), FindShorter(d_vec.data(), n, k));
 		thrust::swap(d_vec, result);
-
 	}
 
 	// Calculations complete

@@ -13,9 +13,8 @@ void iterKernel(int k, int *distances, int N) {
     int row = blockIdx.y;
 
     // If we're over the edge of the matrix return
-    if ((col >= N) || (distances[N * row + k] == INT_MAX) || (distances[k * N + col] == INT_MAX)) {
+    if ((col >= N) || (distances[N * row + k] == INT_MAX) || (distances[k * N + col] == INT_MAX))
         return;
-    }
 
     // Otherwise, calculate the distance
     int candidateBetterDistance = distances[N * row + k] + distances[k * N + col];
