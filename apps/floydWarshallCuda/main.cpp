@@ -65,15 +65,10 @@ int main(int argc, char **argv)
 		std::cout << "Average execution time was " << execTimings / loopCount << " ms." << std::endl;
 		std::cout << "Average copy time from device to host was " << copyToHostTimings / loopCount << " ms." << std::endl;
 		std::cout << "Average total time was " << totalTimings / loopCount << " ms." << std::endl;
+		std::cout << "Checksum " << fletcher64ForVector(m) << std::endl;
 
 		std::string path = filePath.generic_string();
-
-
 		out << path.substr(path.rfind("/") + 1) << "," << fletcher64ForVector(m) << "," << copyToDeviceTimings / loopCount << "," << execTimings / loopCount << "," << copyToHostTimings / loopCount << "," << totalTimings / loopCount << std::endl;
-
-		
-
-
 	}
 
 	out.close();
