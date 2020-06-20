@@ -41,7 +41,13 @@ int main(int argc, char **argv)
 		//}
 
 		std::cout << " ---- START CUDA implementation ----" << std::endl;
-		for (int i = 0; i < loopCount; i++) {
+		for (int i = 0; i <= loopCount; i++) {
+			if (i == 1) {
+				copyToDeviceTimings = 0;
+				execTimings = 0;
+				copyToHostTimings = 0;
+				totalTimings = 0;
+			}
 			// Record start time
 			// We actually just track the alorithm implementation 
 			// not data loading 
