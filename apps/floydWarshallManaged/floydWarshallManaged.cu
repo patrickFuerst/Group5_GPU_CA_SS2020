@@ -30,29 +30,32 @@ int iDivUp(int a, int b)
 
 void floydWarshallManaged(thrust::host_vector<int>& h_vec, double* copyTimings, double* execTimings)
 {
-    int * hostData = thrust::raw_pointer_cast(h_vec.data());
     int N = sqrt(h_vec.size());
     int size = N * N * sizeof(int);
 
     // Track subtask time
     auto timeInit = std::chrono::high_resolution_clock::now();
     
-    int * cudaData;
+    int* cudaData;
     cudaMallocManaged(&cudaData, size);
-    
+
+    for (int i = 0; i < h_vec.size(); i++)
+        cudaData[i] = h_vec[i];
+
     // Device memory allocated
     auto timeHtD = std::chrono::high_resolution_clock::now();
     
-    for (int k = 0; k < N; k++) {
+    for (int k = 0; k < N; k++) 
         iterKernel<<< dim3(iDivUp(N, BLOCKSIZE), N), BLOCKSIZE >>> (k, cudaData, N);
-    }
+
+    cudaDeviceSynchronize();
 
     // Calculations complete
 	auto timeExec = std::chrono::high_resolution_clock::now();
 
-    // transfer data back to host
-    
-    // TODO Transfer result back 
+    // Transfer data back to host
+    for (int i = 0; i < h_vec.size(); i++)
+        h_vec[i] = cudaData[i];
 
     auto timeDtH = std::chrono::high_resolution_clock::now();
 
