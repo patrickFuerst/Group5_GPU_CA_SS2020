@@ -57,5 +57,5 @@ void floydWarshallZeroCopy(thrust::host_vector<int>& h_vec, double* copyTimings,
         std::chrono::duration<double, std::milli> exec = timeExec - timeHtD;
         *execTimings += exec.count();
 
-        cudaFreeHost(hostData);
+        cudaHostUnregister(hostData);
 }
