@@ -66,4 +66,5 @@ void floydWarshallManaged(thrust::host_vector<int>& h_vec, double* copyTimings, 
 
     std::chrono::duration<double, std::milli> deviceToHost = timeDtH - timeExec;
     *copyTimings += deviceToHost.count();
+    cudaFree(cudaData);
 }
