@@ -40,7 +40,7 @@ Or the program `graphGenerator` within the release folder can be called with the
 
 ### Run all benchmarks
 
-To run all benchmarks run the `runBenchmark.sh` script with the parameters `-n k`, where *k* defines how often each implementation is run to calculate
+To run all benchmarks run the `runBenchmark.sh k` with the parameters `k`, where *k* defines how often each implementation is run to calculate
 the mean execution time. This will run all implementations with all generated graphs and save the result of each implementation to the `data/benchmarks` folder.
 
 **!! THIS SCRIPT RUNS VERY LONG !!**
